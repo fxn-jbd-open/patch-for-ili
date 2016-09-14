@@ -1,0 +1,37 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+/usr/local/bin/mtd-by-name.sh
+/usr/local/bin/first-boot-recovery.sh
+#insmod /usr/local/bin/snd-soc-tfa98xx.ko
+
+# adb support
+
+mkdir /dev/usb-ffs -m 0770
+mkdir /dev/usb-ffs/adb -m 0770
+mount -t functionfs adb /dev/usb-ffs/adb
+echo "adb" > /sys/class/android_usb/android0/f_ffs/aliases
+
+#mass_storage,adb
+echo 0 > /sys/class/android_usb/android0/enable
+if [ -e /usr/local/bin/adb_serial ]; then
+    cat /usr/local/bin/adb_serial > /sys/class/android_usb/android0/iSerial
+fi
+echo 2207 > /sys/class/android_usb/android0/idVendor
+echo 0010 > /sys/class/android_usb/android0/idProduct
+echo "mass_storage,adb" > /sys/class/android_usb/android0/functions
+echo 1 > /sys/class/android_usb/android0/enable
+
+/usr/local/sbin/adbd &
+
+exit 0
