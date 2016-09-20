@@ -21,5 +21,14 @@
   `mkdir -p /mnt/linux`  
   `mount -o loop linuxroot-s0.img /mnt/linux`  
   `cp -a ili-rootfs/* /mnt/linux/`  
-  `umount /mnt/linux`
+  `umount /mnt/linux`  
+  
+**Build Tool**  
+  
+  Because the rootfs system ia based on armhf, if you'd like to put executables or libraries, you have to do cross-compiler.  
+  
+  `apt-get install gcc-arm-linux-gnueabihf libssl-dev`  
+  `sudo dpkg -L gcc-4.8-arm-linux-gnueabihf`  
+  
+  
   
