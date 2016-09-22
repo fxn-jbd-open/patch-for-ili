@@ -579,14 +579,14 @@
 			chan-name = "R";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
-			linux,default-trigger = "test_battery-charging";
+			linux,default-trigger = "BATTERY-charging";
 		};
 
 		chan1 {
 			chan-name = "G";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
-			linux,default-trigger = "test_battery-full";
+			linux,default-trigger = "BATTERY-full";
 		};
 #if 0
 		chan2 {
