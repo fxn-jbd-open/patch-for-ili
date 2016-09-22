@@ -210,7 +210,7 @@
         	user {
            		label = "firefly:yellow:user";
            		linux,default-trigger = "ir-user-click";
-           		default-state = "off";
+			default-state = "off";
            		gpios = <&gpio8 GPIO_A2 GPIO_ACTIVE_LOW>;
        		};  
    	}; 
@@ -570,7 +570,7 @@
 	status = "okay";
 
 /*fxn, add, lp5562 led*/
-	bat_led@30 {
+	bat_led@31 {
 		compatible = "ti,lp5562";
 		reg = <0x30>;
 		label = "ili:rgb:bat";
@@ -579,14 +579,16 @@
 			chan-name = "R";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
+			linux,default-trigger = "test_battery-charging";
 		};
 
 		chan1 {
 			chan-name = "G";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
+			linux,default-trigger = "test_battery-full";
 		};
-
+#if 0
 		chan2 {
 			chan-name = "B";
 			led-cur = /bits/ 8 <0x20>;
@@ -598,9 +600,10 @@
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
 		};
+#endif
 	};
 
-	user_led@31 {
+	user_led@30 {
 		compatible = "ti,lp5562";
 		reg = <0x31>;
 		label = "ili:rgb:user";
@@ -622,12 +625,13 @@
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
 		};
-
+#if 0
 		chan3 {
 			chan-name = "W";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
 		};
+#endif
 	};
 
 #if 0
