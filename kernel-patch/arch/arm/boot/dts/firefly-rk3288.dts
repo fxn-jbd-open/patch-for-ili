@@ -572,7 +572,7 @@
 /*fxn, add, lp5562 led*/
 	bat_led@31 {
 		compatible = "ti,lp5562";
-		reg = <0x30>;
+		reg = <0x31>;
 		label = "ili:rgb:bat";
 		clock-mode = /bits/8 <2>;
 		chan0 {
@@ -605,7 +605,7 @@
 
 	user_led@30 {
 		compatible = "ti,lp5562";
-		reg = <0x31>;
+		reg = <0x30>;
 		label = "ili:rgb:user";
 		clock-mode = /bits/8 <2>;
 		chan0 {
