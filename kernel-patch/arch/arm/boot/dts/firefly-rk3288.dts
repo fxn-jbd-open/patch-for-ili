@@ -243,10 +243,15 @@
 
 &pinctrl {
 	//used for init some gpio
-	
-	init-gpios = <&gpio8 GPIO_A0 GPIO_ACTIVE_HIGH
-		&gpio7 GPIO_B1 GPIO_ACTIVE_HIGH		
-		&gpio4 GPIO_B0 GPIO_ACTIVE_HIGH>;
+/*fxn, modified{*/
+//	init-gpios = <&gpio8 GPIO_A0 GPIO_ACTIVE_HIGH
+//		&gpio7 GPIO_B1 GPIO_ACTIVE_HIGH		
+//		&gpio4 GPIO_B0 GPIO_ACTIVE_HIGH>;
+	/*
+		gpio6-a6 : RK_I2S_EN, gpio6-a7 : RK_I2S_SW
+	*/
+	init-gpios = <&gpio6 GPIO_A6 GPIO_ACTIVE_HIGH &gpio6 GPIO_A7 GPIO_ACTIVE_HIGH>;
+/*fxn, end}*/
 	gpio0_gpio {
 			gpio0_c2: gpio0-c2 {
 				rockchip,pins = <GPIO0_C2>;
@@ -1232,8 +1237,10 @@
 		design_capacity = <2100>;
 		design_qmax = <2200>;
 		max_overcharge = <100>;
-		max_charge_currentma = <1500>;
-		max_charge_voltagemv = <4260>;
+/*fxn, modified according to rk818_battery.c{*/
+		max_charge_currentmA = <1500>;
+		max_charge_voltagemV = <4260>;
+/*fxn, end}*/
 		max_bat_voltagemv = <4200>;
         };
 };
