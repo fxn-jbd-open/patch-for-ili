@@ -10,17 +10,17 @@
   <http://cdimage.ubuntu.com/ubuntu-base/releases/14.04/release/ubuntu-base-14.04-core-armhf.tar.gz>  
   
   `sudo su`  
-  `mkdir -p ili-rootfs`  
-  `tar xvzf /path/to/ubuntu-base-14.04-core-armhf.tar.gz -C ili-rootfs`  
-  `cp -a /path/to/patch-for-ili/rootfs-patch/* ili-rootfs/`  
-  `chown -R root:root ili-rootfs/`  
+  `mkdir -p ili-rootfs-4.4`  
+  `tar xvzf /path/to/ubuntu-base-14.04-core-armhf.tar.gz -C ili-rootfs-4.4`  
+  `cp -a /path/to/patch-for-ili/rootfs-patch/* ili-rootfs-4.4/`  
+  `chown -R root:root ili-rootfs-4.4/`  
   
-  `dd if=/dev/zero of=linuxroot-s0.img bs=1M count=256`  
-  `mkfs.ext4 -F -L linuxroot linuxroot-s0.img`  
+  `dd if=/dev/zero of=linuxroot-s0-4.4.img bs=1M count=256`  
+  `mkfs.ext4 -F -L linuxroot linuxroot-s0-4.4.img`  
   
   `mkdir -p /mnt/linux`  
-  `mount -o loop linuxroot-s0.img /mnt/linux`  
-  `cp -a ili-rootfs/* /mnt/linux/`  
+  `mount -o loop linuxroot-s0-4.4.img /mnt/linux`  
+  `cp -a ili-rootfs-4.4/* /mnt/linux/`  
   `umount /mnt/linux`  
   
 **Build Tool**  
