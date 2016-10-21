@@ -1,0 +1,1 @@
+cmd_sound/soc/codecs/audience/snd-soc-es705-escore.o := arm-linux-gnueabihf-ld -EL    -r -o sound/soc/codecs/audience/snd-soc-es705-escore.o sound/soc/codecs/audience/es705_escore.o sound/soc/codecs/audience/escore-pm.o sound/soc/codecs/audience/escore.o sound/soc/codecs/audience/escore-list.o 
