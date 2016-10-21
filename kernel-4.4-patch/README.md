@@ -2,7 +2,7 @@
   
   Reference: <http://rockchip.wikidot.com/linux-user-guide>  
   
-  Won't use GPT method to manage the eMMC partitions, just need kernel 4.4 released from Rockchip.
+  Won't use GPT method to manage the eMMC partitions, just need kernel 4.4 released from Rockchip.  
   
   `mkdir -p ~/proj/rk-linux`  
   `cd ~/proj/rk-linux`  
