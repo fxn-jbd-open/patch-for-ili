@@ -728,14 +728,14 @@
 			chan-name = "BAT-R";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
-			linux,default-trigger = "BATTERY-charging";
+			linux,default-trigger = "battery-charging";
 		};
 
 		chan1 {
 			chan-name = "BAT-G";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
-			linux,default-trigger = "BATTERY-full";
+			linux,default-trigger = "battery-full";
 		};
 #if 0
 		chan2 {
