@@ -18,7 +18,7 @@
   `cd ~/proj/rk-linux/kernel`  
   `make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- ili_linux_defconfig`  
   `make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j4`  
-  `./scripts/resource_tool arch/arm/boot/dts/rk3288-firefly.dtb ./logo.bmp`  
+  `./scripts/resource_tool arch/arm/boot/dts/rk3288-ili.dtb ./logo.bmp`  
   `mkbootimg --kernel /path/to/kernel/arch/arm/boot/zImage --ramdisk /path/to/initrd.img -o boot.img`  
   
 **Outputs**  
