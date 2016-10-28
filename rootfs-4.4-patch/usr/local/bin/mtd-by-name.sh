@@ -15,10 +15,10 @@ if [ -d /sys/class/mtd/ ]; then
     done
 else
     # emmc
-    for i in `ls /sys/block/mmcblk2/mmcblk2p*/uevent`; do
+    for i in `ls /sys/block/mmcblk0/mmcblk0p*/uevent`; do
 	    name=`cat ${i}|grep PARTNAME`
 	    name=${name##PARTNAME=}
-	    i=${i##*mmcblk2/}
+	    i=${i##*mmcblk0/}
 	    i=${i%/uevent}
 	    ln -s /dev/${i} /dev/block/mtd/by-name/${name}
     done
