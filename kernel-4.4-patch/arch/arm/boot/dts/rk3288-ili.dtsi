@@ -78,51 +78,51 @@
 		sdcard-supply = <&vccio_sd>;
 		wifi-supply = <&vccio_wl>;
 	};
-#endif
+
 	ir: ir-receiver {
 		compatible = "gpio-ir-receiver";
 		pinctrl-names = "default";
 		pinctrl-0 = <&ir_int>;
 	};
+#endif
+	key1: adc-key {
+		compatible = "rockchip,key";		
+		io-channels = <&saradc 2>;
 
-	key: adc-keys {
+		lang-key {
+			/*linux: KEY_F13*/
+			linux,code = <183>;
+			label = "lang-a";
+			rockchip,adc_value = <1>;
+		};
+	};
+
+	key2: adc-keys {
 		compatible = "rockchip,key";		
 		io-channels = <&saradc 1>;
 
 		main-key {
 			gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+			/*linux: KEY_RECORD*/
 			linux,code = <167>;
 			label = "record";
 		};
 
 		vol-up-key {
+			/*linux: KEY_VOLUMEUP*/
 			linux,code = <115>;
 			label = "volume up";
 			rockchip,adc_value = <1>;
 		};
 
 		vol-down-key {
+			/*linux: KEY_VOLUMEDOWN*/
 			linux,code = <114>;
 			label = "volume down";
 			rockchip,adc_value = <170>;
 		};
 	};
-/*
-	keys: gpio-keys {
-		compatible = "gpio-keys";
-		#address-cells = <1>;
-		#size-cells = <0>;
 
-		button@0 {
-			gpio-key,wakeup = <1>;
-			gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
-			label = "GPIO Power";
-			linux,code = <116>;
-			pinctrl-names = "default";
-			pinctrl-0 = <&pwr_key>;
-		};
-	};
-*/
 #if 0
 	leds {
 		compatible = "gpio-leds";
@@ -361,7 +361,7 @@
 		regulator-ramp-delay = <8000>;
 		vin-supply = <&vcc_sys>;
 	};
-
+#if 0
 	vdd_gpu: syr828@41 {
 		compatible = "silergy,syr828";
 		fcs,suspend-voltage-selector = <1>;
@@ -373,6 +373,7 @@
 		regulator-ramp-delay = <6000>;
 		vin-supply = <&vcc_sys>;
 	};
+#endif
 #if 0
 	hym8563: hym8563@51 {
 		compatible = "haoyu,hym8563";
@@ -678,22 +679,25 @@
 			};
 		};
 		battery {
+		        compatible = "rk818-battery";
 		        ocv_table = <3345 3678 3693 3718 3755 3772 3776 3780 3785 3795 3811 3838 3881 3908 3930 3962 3977 4033 4079 4093 4156>;
 		        design_capacity = <600>;
 		        design_qmax = <630>;
 		        max_overcharge = <100>;
-		        bat_res = <80>;
-		        max_input_currentmA  = <2000>;
-		        max_chrg_currentmA = <1800>;
-		        max_charge_voltagemV = <4200>;
-		        max_bat_voltagemV = <4200>;
+		        bat_res = <154>;
+		        max_input_current  = <2000>;
+		        max_chrg_current = <630>;
+		        max_chrg_voltage = <4200>;
 		        sleep_enter_current = <300>;
 		        sleep_exit_current = <300>;
 		        power_off_thresd = <3400>;
-		        chrg_diff_voltagemV = <0>;
+		        zero_algorithm_vol = <3850>;
+		        fb_temperature = <105>;
+			sample_res = <20>;
+			max_soc_offset = <60>;
+			energy_mode = <0>;
+			monitor_sec = <5>;
 		        virtual_power = <0>;
-		        support_usb_adp = <1>;
-		        support_dc_adp = <0>;
 		        power_dc2otg = <0>;
 		};
 	};
@@ -813,7 +817,7 @@
 			rockchip,pins = <0 4 RK_FUNC_GPIO &pcfg_output_high>;
 		};
 	};
-
+#if 0
 	dvp {
 		dvp_pwr: dvp-pwr {
 			rockchip,pins = <0 11 RK_FUNC_GPIO &pcfg_pull_none>;
@@ -886,7 +890,7 @@
 			rockchip,pins = <7 11 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
+#endif
 	usb_host {
 		host_vbus_drv: host-vbus-drv {
 			rockchip,pins = <0 14 RK_FUNC_GPIO &pcfg_pull_none>;
@@ -911,7 +915,7 @@
 };
 
 &saradc {
-	vref-supply = <&rk818_vccio_pmu>;
+	vref-supply = <&rk818_vcc_18>;
 	status = "okay";
 };
 
@@ -1012,7 +1016,7 @@
 &usb_otg {
 	status = "okay";
 };
-
+#if 0
 &vopb {
 	status = "okay";
 };
@@ -1032,7 +1036,7 @@
 &vpu {
 	status = "okay";
 };
-
+#endif
 &wdt {
 	status = "okay";
 };

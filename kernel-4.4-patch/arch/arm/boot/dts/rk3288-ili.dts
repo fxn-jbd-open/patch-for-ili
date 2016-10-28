@@ -48,24 +48,6 @@
 	compatible = "firefly,firefly-rk3288", "rockchip,rk3288";
 };
 
-&ir {
-	gpios = <&gpio7 0 GPIO_ACTIVE_LOW>;
-};
-
-&pinctrl {
-	act8846 {
-		pmic_vsel: pmic-vsel {
-			rockchip,pins = <7 14 RK_FUNC_GPIO &pcfg_output_low>;
-		};
-	};
-
-	ir {
-		ir_int: ir-int {
-			rockchip,pins = <7 0 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-	};
-};
-
 &pwm1 {
 	status = "okay";
 };
