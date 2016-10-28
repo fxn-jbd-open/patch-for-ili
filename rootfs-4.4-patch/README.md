@@ -12,7 +12,7 @@
   `sudo su`  
   `mkdir -p ili-rootfs-4.4`  
   `tar xvzf /path/to/ubuntu-base-14.04-core-armhf.tar.gz -C ili-rootfs-4.4`  
-  `cp -a /path/to/patch-for-ili/rootfs-patch/* ili-rootfs-4.4/`  
+  `cp -a /path/to/patch-for-ili/rootfs-4.4-patch/* ili-rootfs-4.4/`  
   `chown -R root:root ili-rootfs-4.4/`  
   
   `dd if=/dev/zero of=linuxroot-s0-4.4.img bs=1M count=256`  
