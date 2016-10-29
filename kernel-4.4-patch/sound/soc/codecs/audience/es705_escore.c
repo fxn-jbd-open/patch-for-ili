@@ -23,6 +23,7 @@
 #include <linux/completion.h>
 #include <linux/i2c.h>
 #include <linux/gpio.h>
+#define DEBUG
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
@@ -3173,23 +3174,29 @@ int es705_core_probe(struct device *dev)
 	}
 
 #ifdef CONFIG_SND_SOC_ES705_EXTCLK_OVER_GPIO
-	dev_dbg(es705_priv.dev, "%s(): extclk_gpio = %d\n",
+/*fxn, modified{*/
+	dev_dbg(escore_priv.dev, "%s(): extclk_gpio = %d\n",
 		__func__, pdata->extclk_gpio);
 	rc = devm_gpio_request(dev, pdata->extclk_gpio, "es705_extclk");
 	if (rc < 0) {
-		dev_warn(es705_priv.dev, "%s(): es705_extclk already requested",
+		dev_warn(escore_priv.dev, "%s(): es705_extclk already requested",
 			 __func__);
 	} else {
 		rc = gpio_direction_output(pdata->extclk_gpio, 1);
 		if (rc < 0) {
-			dev_err(es705_priv.dev,
+			dev_err(escore_priv.dev,
 				"%s(): es705_extclk direction fail %d\n",
 				__func__, rc);
-			goto extclk_gpio_direction_error;
+			goto exit;
 		}
+		pdata->esxxx_clk_cb = NULL;
+		gpio_set_value(pdata->extclk_gpio, 1);
+/*
 		pdata->esxxx_clk_cb = es705_enable_ext_clk;
 		pdata->esxxx_clk_cb(1);
+*/
 	}
+/*fxn, end}*/
 #endif
 
 	dev_dbg(escore_priv.dev, "%s(): wakeup_gpio = %d\n", __func__,

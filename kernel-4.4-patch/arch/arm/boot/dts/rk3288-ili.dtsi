@@ -177,7 +177,7 @@
 				sound-dai = <&nxp_tfa9890_amp>;
 			};
 		};
-
+#if 0
 		simple-audio-card,dai-link@1 {
 			format = "i2s";
 			cpu {
@@ -188,6 +188,8 @@
 				sound-dai = <&spi_es814>;
 			};
 		};
+#endif
+
 	};
 #if 0
 	spdif_out: spdif-out {
@@ -713,6 +715,9 @@
 	nxp_tfa9890_amp: nxp_tfa9890_amp@34 {
 		compatible = "nxp,tfa9890";
 		reg = <0x34>;
+		clock-names = "mclk";
+		clocks = <&cru SCLK_I2S0_OUT>;
+		#sound-dai-cells = <0>;
 	};
 };
 
@@ -967,6 +972,8 @@
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_clk>, <&spi0_cs0>, <&spi0_tx>, <&spi0_rx>, <&spi0_cs1>;
+	max-freq = <48000000>;
+	vmmc-supply = <&rk818_vccio_pmu>;
 	status = "okay";
 
 	spi_es814: spi_es814@00 {
@@ -974,8 +981,18 @@
 		reg = <0>;
 		spi-max-frequency = <18000000>;
 		adnc,reset-gpio = <&gpio5 17 GPIO_ACTIVE_LOW>;
-		adnc,spi-fw-download-speed = <12000000>;
+		adnc,wakeup-gpio = <&gpio5 18 GPIO_ACTIVE_LOW>;
+		adnc,extclk-gpio = <&gpio5 19 GPIO_ACTIVE_HIGH>;
+		adnc,spi-fw-download-speed = <40000>;
 		adnc,spi-operational-speed = <4000000>;
+		clock-names = "mclk";
+		clocks = <&cru SCLK_I2S0_OUT>;
+		#sound-dai-cells = <0>;
+                //spi-cpha;
+		//spi-cpol;
+                poll_mode = <0>;
+	        type = <0>;
+		enable_dma = <0>;
 	};
 };
 
