@@ -707,6 +707,20 @@
 
 &i2c1 {
 	status = "okay";
+
+#if 0
+/*route to i2c2 for testing*/
+	i2c_es814: i2c_es814@3e {
+		compatible = "earSmart";
+		reg = <0x3e>;
+		clock-names = "mclk";
+		clocks = <&cru SCLK_I2S0_OUT>;
+		#sound-dai-cells = <0>;
+		adnc,reset-gpio = <&gpio5 17 GPIO_ACTIVE_LOW>;
+		adnc,wakeup-gpio = <&gpio5 18 GPIO_ACTIVE_LOW>;
+		adnc,extclk-gpio = <&gpio5 19 GPIO_ACTIVE_HIGH>;
+	};
+#endif
 };
 
 &i2c2 {
@@ -718,7 +732,23 @@
 		clock-names = "mclk";
 		clocks = <&cru SCLK_I2S0_OUT>;
 		#sound-dai-cells = <0>;
+		reset-gpio = <&gpio6 6 GPIO_ACTIVE_LOW>;
+		power-gpio = <&gpio6 7 GPIO_ACTIVE_HIGH>;
 	};
+
+#if 0
+/*route to i2c2 for testing*/
+	i2c_es814: i2c_es814@3f {
+		compatible = "earSmart";
+		reg = <0x3f>;
+		clock-names = "mclk";
+		clocks = <&cru SCLK_I2S0_OUT>;
+		#sound-dai-cells = <0>;
+		adnc,reset-gpio = <&gpio5 17 GPIO_ACTIVE_LOW>;
+		adnc,wakeup-gpio = <&gpio5 18 GPIO_ACTIVE_LOW>;
+		adnc,extclk-gpio = <&gpio5 19 GPIO_ACTIVE_HIGH>;
+	};
+#endif
 };
 
 &i2c4 {
@@ -973,27 +1003,29 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_clk>, <&spi0_cs0>, <&spi0_tx>, <&spi0_rx>, <&spi0_cs1>;
 	max-freq = <48000000>;
-	vmmc-supply = <&rk818_vccio_pmu>;
+	vspi0-supply = <&rk818_vccio_pmu>;
 	status = "okay";
 
+#if 0
 	spi_es814: spi_es814@00 {
 		compatible = "earSmart-codec";
 		reg = <0>;
 		spi-max-frequency = <18000000>;
 		adnc,reset-gpio = <&gpio5 17 GPIO_ACTIVE_LOW>;
-		adnc,wakeup-gpio = <&gpio5 18 GPIO_ACTIVE_LOW>;
+		adnc,wakeup-gpio = <&gpio5 18 GPIO_ACTIVE_HIGH>;
 		adnc,extclk-gpio = <&gpio5 19 GPIO_ACTIVE_HIGH>;
-		adnc,spi-fw-download-speed = <40000>;
-		adnc,spi-operational-speed = <4000000>;
+		adnc,spi-fw-download-speed = <9600000>;
+		adnc,spi-operational-speed = <4800000>;
 		clock-names = "mclk";
 		clocks = <&cru SCLK_I2S0_OUT>;
 		#sound-dai-cells = <0>;
                 //spi-cpha;
-		//spi-cpol;
+		spi-cpol;
                 poll_mode = <0>;
 	        type = <0>;
 		enable_dma = <0>;
 	};
+#endif
 };
 
 &tsadc {

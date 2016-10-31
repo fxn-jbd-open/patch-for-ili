@@ -2822,6 +2822,13 @@ static int tfa98xx_ext_reset(struct tfa98xx *tfa98xx)
 	if (tfa98xx && gpio_is_valid(tfa98xx->reset_gpio)) {
 		gpio_set_value_cansleep(tfa98xx->reset_gpio, 1);
 		gpio_set_value_cansleep(tfa98xx->reset_gpio, 0);
+        printk("i2s_switch enabled!, 0x%x\n", tfa98xx->reset_gpio);
+	}
+
+	if (tfa98xx && gpio_is_valid(tfa98xx->power_gpio)) {
+		gpio_set_value_cansleep(tfa98xx->power_gpio, 1);
+		//gpio_set_value_cansleep(tfa98xx->power_gpio, 0);
+        printk("i2s_switch In=Hi!, 0x%x\n", tfa98xx->power_gpio);
 	}
 	return 0;
 }
@@ -2831,6 +2838,11 @@ static int tfa98xx_parse_dt(struct device *dev, struct tfa98xx *tfa98xx,
 	tfa98xx->reset_gpio = of_get_named_gpio(np, "reset-gpio", 0);
 	if (tfa98xx->reset_gpio < 0)
 		dev_dbg(dev, "No reset GPIO provided, will not HW reset device\n");
+
+/*HC*/
+	tfa98xx->power_gpio = of_get_named_gpio(np, "power-gpio", 0);
+	if (tfa98xx->power_gpio < 0)
+		dev_dbg(dev, "No power GPIO provided\n");
 
 	tfa98xx->irq_gpio =  of_get_named_gpio(np, "irq-gpio", 0);
 	if (tfa98xx->irq_gpio < 0)
@@ -3009,6 +3021,14 @@ static int tfa98xx_i2c_probe(struct i2c_client *i2c,
 	if (gpio_is_valid(tfa98xx->irq_gpio)) {
 		ret = devm_gpio_request_one(&i2c->dev, tfa98xx->irq_gpio,
 			GPIOF_DIR_IN, "TFA98XX_INT");
+		if (ret)
+			goto err;
+	}
+
+//HC
+	if (gpio_is_valid(tfa98xx->power_gpio)) {
+		ret = devm_gpio_request_one(&i2c->dev, tfa98xx->power_gpio,
+			GPIOF_OUT_INIT_LOW, "TFA98XX_I2S_SWITCH");
 		if (ret)
 			goto err;
 	}
