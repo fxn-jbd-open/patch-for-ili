@@ -31,7 +31,8 @@
 #include <linux/kthread.h>
 #include "escore.h"
 #include "escore-list.h"
-
+/*HC*/
+extern int fxn_i2s_switch_ctrl(int enable, int out_channel);
 static int escore_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 				unsigned int freq, int dir)
 {
@@ -39,6 +40,7 @@ static int escore_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 	int rc = 0;
 
 	dev_dbg(codec->dev, "%s()\n", __func__);
+    fxn_i2s_switch_ctrl(1,0);
 
 	if (escore_priv.i2s_dai_ops.set_sysclk)
 		rc = escore_priv.i2s_dai_ops.set_sysclk(dai, clk_id,
@@ -56,6 +58,8 @@ static int escore_i2s_set_pll(struct snd_soc_dai *dai, int pll_id,
 
 	dev_dbg(codec->dev, "%s()\n", __func__);
 
+    fxn_i2s_switch_ctrl(1,0);
+
 	if (escore_priv.i2s_dai_ops.set_pll)
 		rc = escore_priv.i2s_dai_ops.set_pll(dai, pll_id,
 				source, freq_in, freq_out);
@@ -71,6 +75,8 @@ static int escore_i2s_set_clkdiv(struct snd_soc_dai *dai, int div_id,
 
 	dev_dbg(codec->dev, "%s()\n", __func__);
 
+    fxn_i2s_switch_ctrl(1,0);
+
 	if (escore_priv.i2s_dai_ops.set_clkdiv)
 		rc = escore_priv.i2s_dai_ops.set_clkdiv(dai, div_id,
 				div);
@@ -84,6 +90,7 @@ static int escore_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	int rc = 0;
 
 	dev_dbg(codec->dev, "%s()\n", __func__);
+    fxn_i2s_switch_ctrl(1,0);
 
 	if (escore_priv.i2s_dai_ops.set_fmt)
 		rc = escore_priv.i2s_dai_ops.set_fmt(dai, fmt);

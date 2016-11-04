@@ -923,6 +923,8 @@ int escore_api_intr_wait_completion(struct escore_priv *escore)
 	return rc;
 }
 
+/*HC*/
+extern int fxn_i2s_switch_ctrl(int enable, int out_channel);
 int escore_wakeup(struct escore_priv *escore)
 {
 	u32 cmd = ES_SYNC_CMD << 16;
@@ -930,6 +932,8 @@ int escore_wakeup(struct escore_priv *escore)
 	int rc = 0;
 	int retry = 20;
 	u32 p_cmd = ES_GET_POWER_STATE << 16;
+
+    fxn_i2s_switch_ctrl(1,0);
 
 	escore->cmd_compl_mode = ES_CMD_COMP_POLL;
 	/* Enable the clocks */
@@ -1447,7 +1451,7 @@ void escore_gpio_reset(struct escore_priv *escore)
 		pr_warn("%s(): Reset GPIO not initialized\n", __func__);
 		return;
 	}
-
+	printk("%s, Enter:\n",__func__);
 	gpio_set_value(escore->pdata->reset_gpio, 0);
 	/* Wait 1 ms then pull Reset signal in High */
 	usleep_range(1000, 1005);
@@ -1522,7 +1526,7 @@ int escore_probe(struct escore_priv *escore, struct device *dev, int curr_intf,
 #endif
 	/* Don't call following function if Runtime PM support
 	 * is required to be disabled */
-	escore_pm_enable();
+	//escore_pm_enable();
 
 out:
 	return rc;

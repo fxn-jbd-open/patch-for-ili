@@ -23,7 +23,6 @@
 #include <linux/completion.h>
 #include <linux/i2c.h>
 #include <linux/gpio.h>
-#define DEBUG
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
@@ -2939,6 +2938,7 @@ static struct esxxx_platform_data *es705_populate_dt_pdata(struct device *dev)
 	dev_dbg(dev, "%s(): extclk gpio %d\n", __func__, pdata->extclk_gpio);
 #endif
 
+
 #if defined(CONFIG_SND_SOC_ES_UART) || \
 	defined(CONFIG_SND_SOC_ES_HIGH_BW_BUS_UART) || \
 	defined(CONFIG_SND_SOC_ES_WAKEUP_UART)
@@ -3038,7 +3038,9 @@ int es705_core_probe(struct device *dev)
 		"audience/cvqmodels/adnc_cvq_detection_bkg_w_hdrs.bin";
 #endif
 #ifndef CONFIG_SND_SOC_ES_ASYNC_FW_LOAD
+#ifdef CONFIG_SND_SOC_ES_VS	/*fxn, start*/
 	struct escore_voice_sense *voice_sense;
+#endif /*fxn, end */
 #endif /* CONFIG_SND_SOC_ES_ASYNC_FW_LOAD */
 
 	if (dev->of_node) {
@@ -3086,7 +3088,7 @@ int es705_core_probe(struct device *dev)
 			escore_priv.i2s_dai_ops.shutdown = es705_i2s_shutdown;
 #endif
 
-	escore_priv.flag.is_codec = 0;
+	escore_priv.flag.is_codec = 1;
 	escore_priv.non_vs_sleep_state = ES_SET_POWER_STATE_SLEEP;
 	escore_priv.cmd_compl_mode = ES_CMD_COMP_POLL;
 	escore_priv.wait_api_intr = 0;
@@ -3191,11 +3193,67 @@ int es705_core_probe(struct device *dev)
 		}
 		pdata->esxxx_clk_cb = NULL;
 		gpio_set_value(pdata->extclk_gpio, 1);
+
 /*
 		pdata->esxxx_clk_cb = es705_enable_ext_clk;
 		pdata->esxxx_clk_cb(1);
 */
 	}
+/*fxn, add, do i2s_en and i2s_sw internally {*/
+#if 0
+	pdata->sw1_gpio = of_get_named_gpio(dev->of_node,"adnc,i2s-en-gpio", 0);
+	if (pdata->sw1_gpio < 0) {
+		dev_err(dev, "%s(): get sw1_gpio failed\n", __func__);
+	}
+	else
+	{
+		int rc = 0;
+
+		//printk("%s(): sw1 gpio %d\n", __func__, pdata->sw1_gpio);
+		rc = devm_gpio_request(dev, pdata->sw1_gpio, "es705_i2s_en");
+		if (rc < 0) {
+			dev_err(escore_priv.dev,
+				"%s(): es705_i2s_en request fail %d\n",
+				__func__, rc);
+		}
+		else
+		{
+			gpio_direction_output(pdata->sw1_gpio, 1);
+			msleep(10);
+			gpio_set_value(pdata->sw1_gpio, 0);
+			msleep(10);
+			devm_gpio_free(dev, pdata->sw1_gpio);
+		}
+	}
+
+	pdata->sw2_gpio = of_get_named_gpio(dev->of_node,"adnc,i2s-sw-gpio", 0);
+	if (pdata->sw2_gpio < 0) {
+		dev_err(dev, "%s(): get sw2_gpio failed\n", __func__);
+
+	}
+	else
+	{
+		int rc = 0;
+		//printk("%s(): sw2 gpio %d\n", __func__, pdata->sw2_gpio);
+		rc = devm_gpio_request(dev, pdata->sw2_gpio, "es705_i2s_sw");
+		if (rc < 0) {
+			dev_err(escore_priv.dev,
+				"%s(): es705_i2s_sw request fail %d\n",
+				__func__, rc);
+		}
+		else
+		{
+			gpio_direction_output(pdata->sw2_gpio, 1);
+			msleep(10);
+			gpio_set_value(pdata->sw2_gpio, 0);
+			msleep(10);
+			devm_gpio_free(dev, pdata->sw2_gpio);
+		}
+	}
+
+#endif
+/*fxn, end}*/
+
 /*fxn, end}*/
 #endif
 

@@ -296,7 +296,7 @@
 	};
 
 	spi0: spi@ff110000 {
-		compatible = "rockchip,rk3288-spi", "rockchip,rk3066-spi";
+		compatible = "rockchip,rk3288-spi";
 		clocks = <&cru SCLK_SPI0>, <&cru PCLK_SPI0>;
 		clock-names = "spiclk", "apb_pclk";
 		dmas = <&dmac_peri 11>, <&dmac_peri 12>;
@@ -1517,6 +1517,7 @@
 			spi0_clk: spi0-clk {
 				rockchip,pins = <5 12 RK_FUNC_1 &pcfg_pull_up>;
 			};
+
 			spi0_cs0: spi0-cs0 {
 				rockchip,pins = <5 13 RK_FUNC_1 &pcfg_pull_up>;
 			};

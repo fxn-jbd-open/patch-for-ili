@@ -2215,6 +2215,32 @@ static void tfa98xx_tapdet_work(struct work_struct *work)
 	queue_delayed_work(tfa98xx->tfa98xx_wq, &tfa98xx->tapdet_work, HZ/10);
 }
 
+/*HC,
+  enable: 1=Yes, 0=No
+  out_channel: 1=TFAxxx, 0=ES814
+*/
+static int iGpioSwitchEnable=-1, iGpioSwitchIn=-1;
+int fxn_i2s_switch_ctrl(int enable, int out_channel)
+{
+    int iRet = -1;
+
+    if (gpio_is_valid(iGpioSwitchEnable)) {
+        if(enable)
+            gpio_set_value(iGpioSwitchEnable, 0);
+        else
+            gpio_set_value(iGpioSwitchEnable, 1);
+        printk("i2s_switch %s! (gpio=%d)\n", enable ? "enabled":"disabled", iGpioSwitchEnable);
+
+        if (gpio_is_valid(iGpioSwitchIn)) {
+            gpio_set_value(iGpioSwitchIn, out_channel);
+            printk("i2s_switch In=%d (gpio=%d)\n", out_channel, iGpioSwitchIn);
+            iRet = 0;
+        }
+    }
+	return iRet;
+};
+EXPORT_SYMBOL_GPL(fxn_i2s_switch_ctrl);
+
 static void tfa98xx_monitor(struct work_struct *work)
 {
 	struct tfa98xx *tfa98xx;
@@ -2466,6 +2492,8 @@ static int tfa98xx_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 {
 	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec_dai->codec);
 
+    fxn_i2s_switch_ctrl(1,1);/*HC*/
+
 	tfa98xx->sysclk = freq;
 	return 0;
 }
@@ -2476,6 +2504,8 @@ static int tfa98xx_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	struct snd_soc_codec *codec = dai->codec;
 
 	pr_debug("fmt=0x%x\n", fmt);
+
+    fxn_i2s_switch_ctrl(1,1);/*HC*/
 
 	/* Supported mode: regular I2S, slave, or PDM */
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
@@ -2822,13 +2852,16 @@ static int tfa98xx_ext_reset(struct tfa98xx *tfa98xx)
 	if (tfa98xx && gpio_is_valid(tfa98xx->reset_gpio)) {
 		gpio_set_value_cansleep(tfa98xx->reset_gpio, 1);
 		gpio_set_value_cansleep(tfa98xx->reset_gpio, 0);
-        printk("i2s_switch enabled!, 0x%x\n", tfa98xx->reset_gpio);
+/*HC*/
+        iGpioSwitchEnable = tfa98xx->reset_gpio;
+        printk("i2s_switch enabled!, gpio(%d)\n", iGpioSwitchEnable);
 	}
 
+/*HC*/
 	if (tfa98xx && gpio_is_valid(tfa98xx->power_gpio)) {
 		gpio_set_value_cansleep(tfa98xx->power_gpio, 1);
-		//gpio_set_value_cansleep(tfa98xx->power_gpio, 0);
-        printk("i2s_switch In=Hi!, 0x%x\n", tfa98xx->power_gpio);
+        iGpioSwitchIn = tfa98xx->power_gpio;
+        printk("i2s_switch In=Hi!, gpio(%d)\n", iGpioSwitchIn);
 	}
 	return 0;
 }
@@ -3025,7 +3058,7 @@ static int tfa98xx_i2c_probe(struct i2c_client *i2c,
 			goto err;
 	}
 
-//HC
+/*HC*/
 	if (gpio_is_valid(tfa98xx->power_gpio)) {
 		ret = devm_gpio_request_one(&i2c->dev, tfa98xx->power_gpio,
 			GPIOF_OUT_INIT_LOW, "TFA98XX_I2S_SWITCH");
@@ -3165,6 +3198,9 @@ static int tfa98xx_i2c_remove(struct i2c_client *i2c)
 		devm_gpio_free(&i2c->dev, tfa98xx->irq_gpio);
 	if (gpio_is_valid(tfa98xx->reset_gpio))
 		devm_gpio_free(&i2c->dev, tfa98xx->reset_gpio);
+
+/*HC*/
+    iGpioSwitchEnable = iGpioSwitchIn = -1;
 
 	return 0;
 }

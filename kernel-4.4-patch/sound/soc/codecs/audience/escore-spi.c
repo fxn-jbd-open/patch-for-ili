@@ -14,10 +14,11 @@
 #include <linux/delay.h>
 #include "escore.h"
 #include "escore-spi.h"
+#include "es705_escore.h"
 
 #define ESCORE_SPI_SET_BITS_PER_WORD(bits) ({				\
 	int ret;							\
-	escore_spi->bits_per_word = bits;				\
+	escore_spi->bits_per_word = 8;					\
 	ret = spi_setup(escore_spi);					\
 	if (ret < 0) {							\
 		dev_err(&escore_spi->dev,				\
@@ -31,16 +32,45 @@
 	ret;								\
 })
 
+#define ESCORE_SPI_SET_BITS_PER_WORD1(bits) ({				\
+	int ret;							\
+	escore_spi->bits_per_word = bits;					\
+	ret = spi_setup(escore_spi);					\
+	if (ret < 0) {							\
+		dev_err(&escore_spi->dev,				\
+		"%s(): can't setup SPI bits per word = %d, ret = %d\n",	\
+			__func__, bits, ret);				\
+	} else {							\
+		dev_dbg(&escore_spi->dev,				\
+			"%s(): SPI bits per word changed to %d\n",	\
+				__func__, bits);			\
+	}								\
+	ret;								\
+})
 static struct spi_device *escore_spi;
 
 static u32 escore_cpu_to_spi(struct escore_priv *escore, u32 resp)
 {
 	return cpu_to_be32(resp);
+	//return resp;
 }
 
 static u32 escore_spi_to_cpu(struct escore_priv *escore, u32 resp)
 {
 	return be32_to_cpu(resp);
+	//return resp;
+}
+
+static u32 escore_cpu16_to_spi(u16 resp)
+{
+	return cpu_to_be16(resp);
+	//return resp;
+}
+
+static u32 escore_spi16_to_cpu(u16 resp)
+{
+	return be16_to_cpu(resp);
+	//return resp;
 }
 
 static int escore_spi_read(struct escore_priv *escore, void *buf, int len)
@@ -99,7 +129,7 @@ static int escore_spi_read_streaming(struct escore_priv *escore,
 
 	for (rdcnt = 0; rdcnt < len; rdcnt += 2) {
 		data = *((u16 *)buf);
-		data = be16_to_cpu(data);
+		data = escore_spi16_to_cpu(data);
 		memcpy(buf, (char *)&data, sizeof(data));
 		buf += 2;
 	}
@@ -138,7 +168,7 @@ static int escore_spi_high_bw_write(struct escore_priv *escore,
 	int rc = 0;
 	int rem = 0;
 	char align[4] = {0};
-
+	int len1;
 #ifdef CONFIG_SND_SOC_ES_SPI_WRITE_DMA_MODE
 	int dma_bytes = 0;
 	int non_dma_bytes = 0, room = 0, bytes = 0;
@@ -147,6 +177,7 @@ static int escore_spi_high_bw_write(struct escore_priv *escore,
 	void *kaddr = NULL;
 	int offset = 0;
 #endif
+	printk("%s, len = %d\n", __func__, len);
 	/* Check if length is 4 byte aligned or not
 	   If not aligned send extra bytes after write */
 	if ((len > 4) && (len % 4 != 0)) {
@@ -266,7 +297,9 @@ static int escore_spi_high_bw_write(struct escore_priv *escore,
 		len = 0;
 	}
 #endif
+#if 0
 	if (len) {
+		printk("%s, len1=%d\n", __func__, len);
 		rc = spi_write(escore_spi, buf, len);
 		if (rc < 0) {
 			dev_err(escore->dev,
@@ -275,9 +308,30 @@ static int escore_spi_high_bw_write(struct escore_priv *escore,
 			goto spi_write_err;
 		}
 	}
-
+#else
+	while (len) {
+		
+		//printk("%s, len1=%d\n", __func__, len);
+		if (len > 32)
+			len1 =32;
+		else
+			len1 = len;
+		rc = spi_write(escore_spi, buf, len1);
+		if (rc < 0) {
+			dev_err(escore->dev,
+				"%s(): SPI Write failed rc = %d\n",
+				__func__, rc);
+			goto spi_write_err;
+		}
+		buf += len1;
+		len -= len1;
+	}
+#endif
+	
 	if (rem != 0)
 		rc = spi_write(escore_spi, align, 4 - rem);
+	//while(1)
+		//msleep(1000);
 spi_write_err:
 	if (rc < 0)
 		ESCORE_FW_RECOVERY_FORCED_OFF(escore);
@@ -301,7 +355,7 @@ static int escore_spi_cmd(struct escore_priv *escore,
 	if ((escore->cmd_compl_mode == ES_CMD_COMP_INTR) && !sr)
 		escore_set_api_intr_wait(escore);
 	*resp = 0;
-	cmd = cpu_to_be32(cmd);
+	cmd = escore_cpu_to_spi(escore, cmd);
 	err = escore_spi_write(escore, &cmd, sizeof(cmd));
 	if (err || sr)
 		goto cmd_exit;
@@ -327,7 +381,7 @@ static int escore_spi_cmd(struct escore_priv *escore,
 
 		err = escore_spi_read(escore, &resp32, sizeof(resp32));
 		dev_dbg(escore->dev, "%s: err=%d\n", __func__, err);
-		*resp = (be32_to_cpu(resp32));
+		*resp = (escore_spi_to_cpu(escore, resp32));
 		dev_dbg(escore->dev, "%s: *resp=0x%08x\n", __func__, *resp);
 		if (err) {
 			dev_dbg(escore->dev,
@@ -337,6 +391,7 @@ static int escore_spi_cmd(struct escore_priv *escore,
 		if (*resp == 0) {
 			if (retry == 0) {
 				err = -ETIMEDOUT;
+				//err = 0;
 				dev_err(escore->dev,
 					"%s: response retry timeout, err=%d\n",
 					__func__, err);
@@ -351,23 +406,29 @@ static int escore_spi_cmd(struct escore_priv *escore,
 			 * second 16bit in second 32bit. So this is
 			 * special condition handling to make response.
 			 */
-			ESCORE_SPI_SET_BITS_PER_WORD(16);
+			dev_err(escore->dev,
+					"%s: need read more data, resp=%x\n",
+					__func__, *resp);
+			ESCORE_SPI_SET_BITS_PER_WORD1(16);
 
 			err = escore_spi_read(escore, &resp16, sizeof(resp16));
 			if (err)
 				dev_dbg(escore->dev,
 					"%s: escore_spi_read() failure, err=%d\n",
 					__func__, err);
-			else
-				*resp = (*resp << 16) | be16_to_cpu(resp16);
-
+			else {
+				dev_err(escore->dev,
+					"%s: read 16bit data, resp16=%x\n",
+					__func__, resp16);
+				*resp = (*resp << 16) | escore_spi16_to_cpu(resp16);
+			}
 			/* Restore SPI bits per word to 32 */
 			ESCORE_SPI_SET_BITS_PER_WORD(32);
 		}
 
 		if ((*resp & ES_ILLEGAL_CMD) == ES_ILLEGAL_CMD) {
 			dev_err(escore->dev, "%s: illegal command 0x%08x\n",
-				__func__, be32_to_cpu(cmd));
+				__func__, escore_spi_to_cpu(escore, cmd));
 			err = -EINVAL;
 			goto cmd_exit;
 		} else {
@@ -377,7 +438,7 @@ static int escore_spi_cmd(struct escore_priv *escore,
 	} while (retry != 0);
 
 cmd_exit:
-	update_cmd_history(be32_to_cpu(cmd), *resp);
+	update_cmd_history(escore_spi_to_cpu(escore, cmd), *resp);
 	DEC_DISABLE_FW_RECOVERY_USE_CNT(escore);
 	if (err && ((*resp & ES_ILLEGAL_CMD) != ES_ILLEGAL_CMD))
 		ESCORE_FW_RECOVERY_FORCED_OFF(escore);
@@ -423,7 +484,7 @@ static int escore_spi_datablock_read(struct escore_priv *escore, void *buf,
 
 	for (rdcnt = 0; rdcnt < len; rdcnt += 2) {
 		temp = *((u16 *)buf);
-		temp = be16_to_cpu(temp);
+		temp = escore_spi16_to_cpu(temp);
 		memcpy(buf, (char *)&temp, sizeof(temp));
 		buf += 2;
 	}
@@ -447,7 +508,19 @@ static int escore_spi_boot_setup(struct escore_priv *escore)
 		return rc;
 
 	msleep(20);
-	sbl_sync_cmd = cpu_to_be16(sbl_sync_cmd);
+#if 0
+	{
+	u32 cmd32,cmd32_2;
+	while(1)
+	{
+		cmd32 = 0x803100b1;
+		escore_spi_cmd(escore,cmd32,&cmd32_2);
+		printk("#3##cmd=%x, cmd32_2=%x\n", cmd32, cmd32_2);
+		msleep(500);
+	}
+	}
+#endif
+	sbl_sync_cmd = escore_cpu16_to_spi(sbl_sync_cmd);
 
 	rc = escore_spi_write(escore, &sbl_sync_cmd, sizeof(sbl_sync_cmd));
 
@@ -466,7 +539,7 @@ static int escore_spi_boot_setup(struct escore_priv *escore)
 		goto escore_spi_boot_setup_failed;
 	}
 
-	sbl_sync_ack = be16_to_cpu(sbl_sync_ack);
+	sbl_sync_ack = escore_spi16_to_cpu(sbl_sync_ack);
 	pr_debug("%s(): SBL SYNC ACK = 0x%08x\n", __func__, sbl_sync_ack);
 	if (sbl_sync_ack != ES_SPI_SYNC_ACK) {
 		pr_err("%s(): sync ack pattern fail 0x%x\n", __func__,
@@ -477,7 +550,7 @@ static int escore_spi_boot_setup(struct escore_priv *escore)
 
 	usleep_range(1000, 1050);
 	pr_debug("%s(): write ES_BOOT_CMD = 0x%04x\n", __func__, boot_cmd);
-	boot_cmd = cpu_to_be16(boot_cmd);
+	boot_cmd = escore_cpu16_to_spi(boot_cmd);
 	rc = escore_spi_write(escore, &boot_cmd, sizeof(boot_cmd));
 	if (rc < 0) {
 		pr_err("%s(): firmware load failed boot write %d\n",
@@ -492,7 +565,7 @@ static int escore_spi_boot_setup(struct escore_priv *escore)
 			       __func__, rc);
 		}
 
-		boot_ack = be16_to_cpu(boot_ack);
+		boot_ack = escore_spi16_to_cpu(boot_ack);
 		pr_debug("%s(): BOOT ACK = 0x%08x\n", __func__, boot_ack);
 		if (boot_ack != ES_SPI_BOOT_ACK) {
 			pr_err("%s():boot ack pattern fail 0x%08x", __func__,
@@ -507,9 +580,35 @@ static int escore_spi_boot_setup(struct escore_priv *escore)
 		goto escore_spi_boot_setup_failed;
 	}
 	rc = ESCORE_SPI_SET_BITS_PER_WORD(32);
-	rc = escore_spi_setup(escore->pdata->spi_fw_download_speed);
+	//rc = escore_spi_setup(escore->pdata->spi_fw_download_speed);
 escore_spi_boot_setup_failed:
 	return rc;
+}
+#define SIZE_OF_VERBUF 256
+static void es814_fw_version_show(struct escore_priv *escore)
+{
+	int idx = 0;
+	unsigned int value;
+	char versionbuffer[SIZE_OF_VERBUF];
+	char *verbuf = versionbuffer;
+	//struct escore_priv *escore = &escore_priv;
+
+	memset(verbuf, 0, SIZE_OF_VERBUF);
+
+	//mutex_lock(&escore->access_lock);
+	value = escore_read(NULL, ES705_FW_FIRST_CHAR);
+	*verbuf++ = (value & 0x00ff);
+	for (idx = 0; idx < (SIZE_OF_VERBUF-2); idx++) {
+		value = escore_read(NULL, ES705_FW_NEXT_CHAR);
+		*verbuf++ = (value & 0x00ff);
+		if (!value)
+			break;
+	}
+	//mutex_unlock(&escore->access_lock);
+	/* Null terminate the string*/
+	*verbuf = '\0';
+	printk("Audience fw ver %s\n", versionbuffer);
+	return;// snprintf(buf, PAGE_SIZE, "FW Version = %s\n", versionbuffer);
 }
 
 int escore_spi_boot_finish(struct escore_priv *escore)
@@ -546,6 +645,32 @@ int escore_spi_boot_finish(struct escore_priv *escore)
 			break;
 		}
 	} while (sync_retry--);
+#if 1	
+	if (!rc) {
+		printk("%s, write command when sync success!\n", __func__);
+		es814_fw_version_show(escore);
+		sync_cmd = 0x803100f1;
+		rc = escore_spi_cmd(escore, sync_cmd, &sync_ack);
+		if (rc)
+			printk("%s, write command fail cmd=%x, resp= %x !\n", __func__, sync_cmd, 				sync_ack);
+		else
+			printk("%s, write command success cmd=%x, resp= %x !\n", __func__, sync_cmd, 				sync_ack);
+		
+		sync_cmd = 0x803100b1;
+		rc = escore_spi_cmd(escore, sync_cmd, &sync_ack);
+		if (rc)
+			printk("%s, write command fail cmd=%x, resp= %x !\n", __func__, sync_cmd, 				sync_ack);
+		else
+			printk("%s, write command success cmd=%x, resp= %x !\n", __func__, sync_cmd, 				sync_ack);
+
+		sync_cmd = 0x803100b2;
+		rc = escore_spi_cmd(escore, sync_cmd, &sync_ack);
+		if (rc)
+			printk("%s, write command fail cmd=%x, resp= %x !\n", __func__, sync_cmd, 				sync_ack);
+		else
+			printk("%s, write command success cmd=%x, resp= %x !\n", __func__, sync_cmd, 				sync_ack);
+	}
+#endif
 	return rc;
 }
 

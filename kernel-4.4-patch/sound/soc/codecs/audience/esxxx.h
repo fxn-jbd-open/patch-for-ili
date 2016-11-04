@@ -132,6 +132,8 @@ struct esxxx_platform_data {
 	unsigned int	gpio_a_irq_type;
 	unsigned int	gpio_b_irq_type;
 	int	reset_gpio;
+	int	sw1_gpio;
+	int	sw2_gpio;	
 	int	wakeup_gpio;
 	int	gpioa_gpio;
 	int	gpiob_gpio;
