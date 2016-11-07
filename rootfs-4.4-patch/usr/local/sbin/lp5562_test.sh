@@ -1,21 +1,18 @@
 #!/bin/bash
 
 # turn off all leds
-echo none > /sys/class/leds/BAT-R/trigger
-echo none > /sys/class/leds/BAT-G/trigger
-echo none > /sys/class/leds/USER-R/trigger
-echo none > /sys/class/leds/USER-G/trigger
-echo none > /sys/class/leds/USER-B/trigger
-
-echo 0 > /sys/bus/i2c/devices/4-0030/run_engine
-echo 0 > /sys/bus/i2c/devices/4-0031/run_engine
+#echo none > /sys/class/leds/BAT-R/trigger
+#echo none > /sys/class/leds/BAT-G/trigger
+#echo none > /sys/class/leds/USER-R/trigger
+#echo none > /sys/class/leds/USER-G/trigger
+#echo none > /sys/class/leds/USER-B/trigger
 
 if [ "${1}" == "on" ]; then
 
 #blinking BAT-R
 echo 1 > /sys/bus/i2c/devices/4-0031/select_engine
 echo "RGB" > /sys/bus/i2c/devices/4-0031/engine_mux
-sleep 0.1
+sleep 0.5
 echo 1 > /sys/class/firmware/lp5562/loading
 echo "40006000E00440FF6000" > /sys/class/firmware/lp5562/data
 echo 0 > /sys/class/firmware/lp5562/loading
@@ -55,6 +52,12 @@ echo "E10040FF580040007000" > /sys/class/firmware/lp5562/data
 echo 0 > /sys/class/firmware/lp5562/loading
 
 echo 1 > /sys/bus/i2c/devices/4-0030/run_engine
+
+elif [ "${1}" == "off" ]; then
+
+echo 0 > /sys/bus/i2c/devices/4-0030/run_engine
+echo 0 > /sys/bus/i2c/devices/4-0031/run_engine
+
 fi
 
 exit 0
