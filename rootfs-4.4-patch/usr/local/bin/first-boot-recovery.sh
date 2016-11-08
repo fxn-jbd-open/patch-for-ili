@@ -13,9 +13,10 @@ if [ -e /firstboot ]; then
     echo "======Expanding the rootfs..."
     resize2fs /dev/block/mtd/by-name/linuxroot
 
-    echo "======Formating backup as FAT..."
-    mkfs.fat /dev/mmcblk0p4
-    fsck.fat /dev/mmcblk0p4
+    #don't do this in final image, will do it in PT2 station
+    #echo "======Formating backup as FAT..."
+    #mkfs.fat /dev/mmcblk0p4
+    #fsck.fat /dev/mmcblk0p4
 
     clean_first_boot
 fi
