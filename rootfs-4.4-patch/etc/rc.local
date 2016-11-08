@@ -25,4 +25,7 @@ echo $UDC > /sys/kernel/config/usb_gadget/g1/UDC
 # UDC daemon, automatically create UDC if missing
 /usr/local/sbin/udc_d &
 
+# pm handler
+/usr/local/sbin/pm_handler /dev/input/event0 &
+
 exit 0
