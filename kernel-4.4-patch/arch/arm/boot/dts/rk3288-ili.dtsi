@@ -262,11 +262,10 @@
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-min-microvolt = <1100000>;
-				regulator-max-microvolt = <1100000>;
-				regulator-ramp-delay = <0>;
+				regulator-max-microvolt = <1100000>;				
 				regulator-state-mem {
 					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <900000>;
+					regulator-suspend-microvolt = <1100000>;
 				};
 			};
 			rk818_vdd_gpu: DCDC_REG2 {
@@ -274,11 +273,10 @@
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-min-microvolt = <1100000>;
-				regulator-max-microvolt = <1100000>;
-				regulator-ramp-delay = <0>;
+				regulator-max-microvolt = <1100000>;				
 				regulator-state-mem {
 					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <1200000>;
+					regulator-suspend-microvolt = <1100000>;
 				};
 			};
 
@@ -304,7 +302,7 @@
 				regulator-max-microvolt = <3300000>;
 				regulator-state-mem {
 					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <2800000>;
+					regulator-suspend-microvolt = <3300000>;
 				};
 			};
 
@@ -316,19 +314,19 @@
 				regulator-max-microvolt = <1800000>;
 				regulator-state-mem {
 					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <3300000>;
+					regulator-suspend-microvolt = <1800000>;
 				};
 			};
 
 			rk818_vcc_tp: LDO_REG2 {
 				regulator-name = "vcc_tp";
-				regulator-always-on;
-				regulator-boot-on;
+				//regulator-always-on;
+				//regulator-boot-on;
 				regulator-min-microvolt = <3300000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-state-mem {
-					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <3300000>;
+					regulator-off-in-suspend;
+					//regulator-suspend-microvolt = <3300000>;
 				};
 			};
 
@@ -346,25 +344,25 @@
 
 			rk818_vcc18_lcd: LDO_REG4 {
 				regulator-name = "vcc18_lcd";
-				regulator-always-on;
-				regulator-boot-on;
+				//regulator-always-on;
+				//regulator-boot-on;
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-state-mem {
-					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <1800000>;
+					regulator-off-in-suspend;
+					//regulator-suspend-microvolt = <1800000>;
 				};
 			};
 
 			rk818_vccio_sd: LDO_REG5 {
 				regulator-name = "vccio_sd";
-				regulator-always-on;
-				regulator-boot-on;
+				//regulator-always-on;
+				//regulator-boot-on;
 				regulator-min-microvolt = <3300000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-state-mem {
-					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <3300000>;
+					regulator-off-in-suspend;
+					//regulator-suspend-microvolt = <3300000>;
 				};
 			};
 
@@ -376,7 +374,7 @@
 				regulator-max-microvolt = <1100000>;
 				regulator-state-mem {
 					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <1000000>;
+					regulator-suspend-microvolt = <1100000>;
 				};
 			};
 
@@ -394,34 +392,34 @@
 
 			rk818_vcca_codec: LDO_REG8 {
 				regulator-name = "vcca_codec";
-				regulator-always-on;
-				regulator-boot-on;
+				//regulator-always-on;
+				//regulator-boot-on;
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-state-mem {
-					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <1800000>;
+					regulator-off-in-suspend;
+					//regulator-suspend-microvolt = <1800000>;
 				};
 			};
 
 			rk818_vcc_wl: LDO_REG9 {
-				regulator-always-on;
-				regulator-boot-on;
+				//regulator-always-on;
+				//regulator-boot-on;
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-name = "vcc_wl";
 				regulator-state-mem {
-					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <3300000>;
+					regulator-off-in-suspend;
+					//regulator-suspend-microvolt = <1800000>;
 				};
 			};
 
 			rk818_vcc_lcd: SWITCH_REG {
-				regulator-always-on;
-				regulator-boot-on;
+				//regulator-always-on;
+				//regulator-boot-on;
 				regulator-name = "vcc_lcd";
 				regulator-state-mem {
-					regulator-on-in-suspend;
+					regulator-off-in-suspend;
 				};
 			};
 		};
@@ -605,7 +603,7 @@
 		adnc,extclk-gpio = <&gpio5 19 GPIO_ACTIVE_HIGH>;
 		adnc,i2s-en-gpio = <&gpio6 6 GPIO_ACTIVE_LOW>;
 		adnc,i2s-sw-gpio = <&gpio6 7 GPIO_ACTIVE_LOW>;
-		adnc,adnc,spi-wdb-speed = <4000000>;
+		adnc,spi-wdb-speed = <4000000>;
 		adnc,spi-fw-download-speed = <12000000>;
 		adnc,spi-operational-speed = <4000000>;
 		clock-names = "mclk";
@@ -617,12 +615,6 @@
 	        type = <0>;
 		enable_dma = <0>;
 	};
-};
-
-&tsadc {
-	rockchip,hw-tshut-mode = <0>;
-	rockchip,hw-tshut-polarity = <0>;
-	status = "okay";
 };
 
 &uart0 {

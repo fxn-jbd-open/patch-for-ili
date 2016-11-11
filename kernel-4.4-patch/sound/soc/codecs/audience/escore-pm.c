@@ -318,6 +318,8 @@ static int escore_generic_suspend(struct device *dev)
 	int ret = 0;
 
 	dev_dbg(dev, "%s()\n", __func__);
+/*fxn, let dsp in normal state always*/
+	return 0;
 
 	if (escore->dev != dev) {
 		dev_dbg(dev, "%s() Invalid device\n", __func__);
@@ -348,6 +350,9 @@ static int escore_generic_resume(struct device *dev)
 	struct escore_priv *escore = &escore_priv;
 
 	dev_dbg(dev, "%s()\n", __func__);
+
+/*fxn, let dsp in normal state always*/
+	return 0;
 
 	if (escore->dev != dev) {
 		dev_dbg(dev, "%s() Invalid device\n", __func__);
