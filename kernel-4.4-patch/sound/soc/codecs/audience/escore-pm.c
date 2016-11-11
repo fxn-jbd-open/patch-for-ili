@@ -383,6 +383,9 @@ static void escore_complete(struct device *dev)
 
 	dev_dbg(dev, "%s()\n", __func__);
 
+/*fxn, let dsp in normal state always*/
+	return;
+
 	if (escore->dev != dev)
 		dev_dbg(dev, "%s() Invalid device\n", __func__);
 	else
