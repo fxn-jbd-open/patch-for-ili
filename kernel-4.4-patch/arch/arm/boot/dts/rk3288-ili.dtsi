@@ -82,6 +82,8 @@
 			label = "record";
 		};
 
+/*The customer removes these two keys in next product*/
+#if 0
 		/*Volume Up*/
 		vol-up-key {
 			/*linux: KEY_VOLUMEUP*/
@@ -97,6 +99,7 @@
 			label = "volume down";
 			rockchip,adc_value = <170>;
 		};
+#endif
 	};
 
 /*HC*/
@@ -423,6 +426,7 @@
 				};
 			};
 		};
+		/**/
 		battery {
 		        compatible = "rk818-battery";
 		        ocv_table = <3345 3678 3693 3718 3755 3772 3776 3780 3785 3795 3811 3838 3881 3908 3930 3962 3977 4033 4079 4093 4156>;
@@ -469,7 +473,8 @@
 
 &i2c4 {
 	status = "okay";
-
+#if 0
+/*The customer will remove side leds in next product*/
 /*Side LED, response to battery status*/
 	bat_led@31 {
 		compatible = "ti,lp5562";
@@ -490,8 +495,10 @@
 			linux,default-trigger = "battery-full";
 		};
 	};
+#endif
 
-/*Status RGB LED, turn on R LED as default a power on*/
+/*Status RGB LED*/
+
 	user_led@30 {
 		compatible = "ti,lp5562";
 		reg = <0x30>;
@@ -501,13 +508,14 @@
 			chan-name = "USER-R";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
+			linux,default-trigger = "battery-charging";
 		};
 
 		chan1 {
 			chan-name = "USER-G";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
-			linux,default-trigger = "default-on";
+			linux,default-trigger = "battery-full";
 		};
 
 		chan2 {
