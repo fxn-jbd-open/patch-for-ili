@@ -96,6 +96,7 @@
 			resets = <&cru SRST_CORE0>;
 			operating-points = <
 				/* KHz    uV */
+				1800000 1400000	/*add this line*/
 				1608000 1350000
 				1512000 1300000
 				1416000 1200000

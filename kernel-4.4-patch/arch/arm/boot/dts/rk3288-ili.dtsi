@@ -228,7 +228,7 @@
 		reg = <0x40>;
 		regulator-name = "vdd_cpu";
 		regulator-min-microvolt = <850000>;
-		regulator-max-microvolt = <1350000>;
+		regulator-max-microvolt = <1400000>;
 		regulator-always-on;
 		regulator-boot-on;
 		regulator-enable-ramp-delay = <300>;
@@ -426,7 +426,8 @@
 				};
 			};
 		};
-		/**/
+#if 0
+		/*SYNergy battery*/
 		battery {
 		        compatible = "rk818-battery";
 		        ocv_table = <3345 3678 3693 3718 3755 3772 3776 3780 3785 3795 3811 3838 3881 3908 3930 3962 3977 4033 4079 4093 4156>;
@@ -434,7 +435,7 @@
 		        design_qmax = <630>;
 		        max_overcharge = <100>;
 		        bat_res = <154>;
-		        max_input_current  = <2000>;
+		        max_input_current  = <1000>;
 		        max_chrg_current = <1000>;
 		        max_chrg_voltage = <4200>;
 		        sleep_enter_current = <300>;
@@ -449,6 +450,31 @@
 		        virtual_power = <0>;
 		        power_dc2otg = <0>;
 		};
+#else
+		/*macair battery*/
+		battery {
+		        compatible = "rk818-battery";
+			ocv_table = <3000 3596 3672 3693 3723 3740 3755 3765 3776 3788 3805 3826 3855 3891 3925 3958 3993 4035 4079 4127 4187>;
+		        design_capacity = <630>;
+		        design_qmax = <661>;
+		        max_overcharge = <100>;
+			bat_res = <290>;
+		        max_input_current  = <1000>;
+		        max_chrg_current = <1000>;
+		        max_chrg_voltage = <4200>;
+		        sleep_enter_current = <300>;
+		        sleep_exit_current = <300>;
+		        power_off_thresd = <3400>;
+		        zero_algorithm_vol = <3850>;
+		        fb_temperature = <105>;
+			sample_res = <20>;
+			max_soc_offset = <60>;
+			energy_mode = <0>;
+			monitor_sec = <5>;
+		        virtual_power = <0>;
+		        power_dc2otg = <0>;
+		};
+#endif
 	};
 };
 
