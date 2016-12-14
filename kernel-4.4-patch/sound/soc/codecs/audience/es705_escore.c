@@ -57,6 +57,8 @@
 #include "escore-vs.h"
 #include "escore-version.h"
 
+#define ILI_FXCN
+#define ILI_FXCN_WA1
 
 /* local function proto type */
 /* static int es705_dev_rdb(struct escore_priv *es705, void *buf, int len);
@@ -244,7 +246,11 @@ struct snd_soc_dai_driver es705_dai[] = {
 		},
 		.capture = {
 			.stream_name = "PORTA Capture",
+#ifdef ILI_FXCN
+			.channels_min = 1,
+#else
 			.channels_min = 2,
+#endif
 			.channels_max = 2,
 			.rates = ES705_RATES,
 			.formats = ES705_FORMATS,
@@ -263,7 +269,11 @@ struct snd_soc_dai_driver es705_dai[] = {
 		},
 		.capture = {
 			.stream_name = "PORTB Capture",
+#ifdef ILI_FXCN
+			.channels_min = 1,
+#else
 			.channels_min = 2,
+#endif
 			.channels_max = 2,
 			.rates = ES705_RATES,
 			.formats = ES705_FORMATS,
@@ -677,6 +687,22 @@ static ssize_t es705_set_profile_enable(struct device *dev,
 static DEVICE_ATTR(profile_enable, 0664,
 		es705_get_profile_enable, es705_set_profile_enable);
 /*fxn,end}*/
+
+#ifdef ILI_FXCN_WA1
+static ssize_t es705_force_recovery(struct device *dev,
+				struct device_attribute *attr,
+				const char *buf, size_t count)
+{
+	struct escore_priv *escore = &escore_priv;
+
+	printk("[es705_escore] %s\n", __func__);
+	escore_fw_recovery(escore, 1);
+	return count;
+}
+
+static DEVICE_ATTR(force_recovery, 0644, NULL, es705_force_recovery);
+#endif
+
 static struct attribute *core_sysfs_attrs[] = {
 	&dev_attr_route_status.attr,
 	&dev_attr_route.attr,
@@ -691,6 +717,9 @@ static struct attribute *core_sysfs_attrs[] = {
 	&dev_attr_power_state.attr,
 	&dev_attr_escore_debug.attr,
 	&dev_attr_profile_enable.attr,
+#ifdef ILI_FXCN_WA1
+	&dev_attr_force_recovery.attr,
+#endif
 	NULL
 };
 

@@ -30,6 +30,8 @@
 
 #include "config.h"
 
+#define ILI_FXCN_WA1
+
 #define I2C_RETRIES 50
 #define I2C_RETRY_DELAY 5 /* ms */
 /* TODO: remove genregs usage? */
@@ -116,6 +118,35 @@ static struct tfa98xx_rate rate_to_fssel[] = {
 	{ 44100, 7 },
 	{ 48000, 8 },
 };
+
+#ifdef ILI_FXCN_WA1
+static int tfa98xx_ext_reset(struct tfa98xx *tfa98xx);
+
+static struct tfa98xx *g_tfa98xx;
+static ssize_t tfa98xx_force_reset(struct device *dev,
+				struct device_attribute *attr,
+				const char *buf, size_t count)
+{
+	if ( g_tfa98xx ){
+		printk("[es705_escore] %s : Call tfa98xx_ext_reset\n", __func__);
+		tfa98xx_ext_reset(g_tfa98xx);
+	}
+	else {
+		printk("[es705_escore] %s : Nothing to be done\n", __func__);
+	}
+	return count;
+}
+static DEVICE_ATTR(force_reset, 0644, NULL, tfa98xx_force_reset);	
+
+static struct attribute *core_sysfs_attrs[] = {
+	&dev_attr_force_reset.attr,
+	NULL
+};
+
+static struct attribute_group core_sysfs = {
+	.attrs = core_sysfs_attrs
+};
+#endif
 
 /* Wrapper for tfa start */
 static enum tfa_error tfa98xx_tfa_start(struct tfa98xx *tfa98xx, int next_profile, int *vstep)
@@ -2667,7 +2698,9 @@ static int tfa98xx_probe(struct snd_soc_codec *codec)
 	/* struct i2c_client *i2c = to_i2c_client(codec->dev); */
 	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec);
 	int ret;
-
+#ifdef ILI_FXCN_WA1
+	int rc;
+#endif
 	pr_debug("\n");
 
 	tfa98xx->rate_constraint.list = &tfa98xx->rate_constraint_list[0];
@@ -2702,6 +2735,14 @@ static int tfa98xx_probe(struct snd_soc_codec *codec)
 	dev_info(codec->dev, "tfa98xx codec registered (%s)",
 							tfa98xx->fw.name);
 
+#ifdef ILI_FXCN_WA1
+	g_tfa98xx = NULL;
+	rc = sysfs_create_group(&tfa98xx->dev->kobj, &core_sysfs);
+	if (rc) {
+		printk("[tfa98xx] %s : Fail to create sysfs.\n", __func__);
+	}
+	g_tfa98xx = tfa98xx;
+#endif
 	return ret;
 }
 
@@ -2720,6 +2761,9 @@ static int tfa98xx_remove(struct snd_soc_codec *codec)
 	if (tfa98xx->tfa98xx_wq)
 		destroy_workqueue(tfa98xx->tfa98xx_wq);
 
+#ifdef ILI_FXCN_WA1
+	g_tfa98xx = NULL;
+#endif
 	return 0;
 }
 
