@@ -14,7 +14,7 @@ if [ "$1" == "once" ]; then
 		aplay -P /mtc/1kHz_44100Hz_16bit_05sec.wav &
 		sleep 1
 		climax -dsysfs --slave=0x34 -l /mtc/mono-ili.cnt --calibrate=once
-		sleep 1
+		sleep 5
 		echo "Done"
 	fi
 
@@ -23,7 +23,7 @@ elif [ "$1" == "always" ]; then
 	aplay -P /mtc/1kHz_44100Hz_16bit_05sec.wav &
 	sleep 1
 	climax -dsysfs --slave=0x34 -l /mtc/mono-ili.cnt --calibrate
-	sleep 1
+	sleep 5
 	echo "Done"
 
 elif [ "$1" == "show" ]; then
