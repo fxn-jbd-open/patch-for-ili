@@ -2,12 +2,12 @@
 
 if [ "$1" == "once" ]; then
 #calibrate once
-	aplay -P /mtc/silent_1sec.wav &
-	str=$(climax -dsysfs --slave=0x34 -r 0x80|grep 0x0413)
-	str1=$(climax -dsysfs --slave=0x34 -r 0x80|grep 0x0013)
-	
+	aplay -P /mtc/silent_1sec.wav
+	climax -dsysfs --slave=0x34 -r 0x80
+	str=$(climax -dsysfs --slave=0x34 -r 0x80|grep "0x[[:xdigit:]]\{1,3\}3")
+		
 	# checking
-	if [ ${#str} != "0" ] || [ ${#str1} != "0" ]; then
+	if [ ${#str} != "0" ]; then
 		echo "Calibrated"
 	else
 		echo "Calibrating..."
@@ -40,10 +40,10 @@ elif [ "$1" == "dump" ]; then
 	
 elif [ "$1" == "check" ]; then
 #calibrate check
-	aplay -P /mtc/silent_1sec.wav &
-	str=$(climax -dsysfs --slave=0x34 -r 0x80|grep 0x0413)
-	str1=$(climax -dsysfs --slave=0x34 -r 0x80|grep 0x0013)
-	if [ ${#str} != "0" ] || [ ${#str1} != "0" ]; then
+	aplay -P /mtc/silent_1sec.wav
+	climax -dsysfs --slave=0x34 -r 0x80
+	str=$(climax -dsysfs --slave=0x34 -r 0x80|grep "0x[[:xdigit:]]\{1,3\}3")
+	if [ ${#str} != "0" ]; then
 		echo "Calibrated"
 	else
 		echo "K_Fail"
