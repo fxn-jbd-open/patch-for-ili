@@ -13,7 +13,6 @@
 
 /usr/local/bin/mtd-by-name.sh
 /usr/local/bin/first-boot-recovery.sh
-#insmod /usr/local/bin/snd-soc-tfa98xx.ko
 
 # adb support
 
@@ -21,6 +20,12 @@
 sleep 1
 UDC=`ls /sys/class/udc/| awk '{print $1}'`
 echo $UDC > /sys/kernel/config/usb_gadget/g1/UDC
+
+# set os to ondemand mode
+echo ondemand > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo ondemand > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+echo ondemand > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+echo ondemand > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
 
 # UDC daemon, automatically create UDC if missing
 /usr/local/sbin/udc_d &
