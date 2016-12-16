@@ -1,0 +1,18 @@
+#!/bin/bash
+#write
+sync
+dd if=/mtc/emmcpattrn.bin of=/dev/mmcblk0p3 bs=1 count=64
+#read
+dd if=/dev/mmcblk0p3 of=/tmp/pattrn.read bs=1 count=64
+#clean
+dd if=/dev/zero of=/dev/mmcblk0p3 bs=1 count=64
+#compare
+res=$(diff /mtc/emmcpattrn.bin /tmp/pattrn.read)
+
+if [ ${#res} == "0" ]; then
+echo Pass
+else
+echo Fail
+fi
+
+exit 0
