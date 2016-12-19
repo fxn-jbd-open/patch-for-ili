@@ -60,11 +60,20 @@
 		compatible = "rockchip,key";		
 		io-channels = <&saradc 2>;
 
+		/*S1 changed: hardward using gpio0_b0 and named as function key*/
+		#if 0
 		lang-key {
 			/*linux: KEY_F13*/
 			linux,code = <183>;
 			label = "lang-a";
 			rockchip,adc_value = <1>;
+		};
+		#endif
+		lang-key {
+			gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
+			/*linux: KEY_F13*/			
+			linux,code = <183>;
+			label = "lang-a";
 		};
 	};
 
@@ -82,8 +91,8 @@
 			label = "record";
 		};
 
-/*The customer removes these two keys in next product*/
-#if 0
+		/*S1 changed:The customer removes these two keys in next product*/
+		#if 0
 		/*Volume Up*/
 		vol-up-key {
 			/*linux: KEY_VOLUMEUP*/
@@ -99,7 +108,7 @@
 			label = "volume down";
 			rockchip,adc_value = <170>;
 		};
-#endif
+		#endif
 	};
 
 /*HC*/
@@ -426,8 +435,8 @@
 				};
 			};
 		};
-#if 0
-		/*SYNergy battery*/
+		#if 0
+		/*S0: SYNergy battery*/
 		battery {
 		        compatible = "rk818-battery";
 		        ocv_table = <3345 3678 3693 3718 3755 3772 3776 3780 3785 3795 3811 3838 3881 3908 3930 3962 3977 4033 4079 4093 4156>;
@@ -450,15 +459,15 @@
 		        virtual_power = <0>;
 		        power_dc2otg = <0>;
 		};
-#else
-		/*macair battery*/
+		#endif
+		/*S1 changed: mcnair battery*/
 		battery {
 		        compatible = "rk818-battery";
 			ocv_table = <3000 3596 3672 3693 3723 3740 3755 3765 3776 3788 3805 3826 3855 3891 3925 3958 3993 4035 4079 4127 4187>;
 		        design_capacity = <630>;
 		        design_qmax = <661>;
 		        max_overcharge = <100>;
-			bat_res = <290>;
+			bat_res = <300>;
 		        max_input_current  = <1000>;
 		        max_chrg_current = <1000>;
 		        max_chrg_voltage = <4200>;
@@ -474,7 +483,6 @@
 		        virtual_power = <0>;
 		        power_dc2otg = <0>;
 		};
-#endif
 	};
 };
 
@@ -499,8 +507,9 @@
 
 &i2c4 {
 	status = "okay";
+
+/*S1 changed: The customer will remove side leds in next product*/
 #if 0
-/*The customer will remove side leds in next product*/
 /*Side LED, response to battery status*/
 	bat_led@31 {
 		compatible = "ti,lp5562";
@@ -525,6 +534,7 @@
 
 /*Status RGB LED*/
 
+	/*S1 changed: since side leds are removed, mapping user-R and user-G to battery charging status*/
 	user_led@30 {
 		compatible = "ti,lp5562";
 		reg = <0x30>;

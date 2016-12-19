@@ -457,7 +457,7 @@ static void rk818_cg_set_chrg_param(struct rk818_charger *cg,
 		cg->ac_in = 0;
 		if (cg->dc_in == 0) {
 			cg->prop_status = POWER_SUPPLY_STATUS_DISCHARGING;
-			rk818_cg_set_input_current(cg, cg->chrg_input /*INPUT_CUR450MA*/); /*fxn, modified*/
+			rk818_cg_set_input_current(cg, INPUT_CUR450MA);
 		}
 		power_supply_changed(cg->usb_psy);
 		power_supply_changed(cg->ac_psy);
@@ -467,7 +467,7 @@ static void rk818_cg_set_chrg_param(struct rk818_charger *cg,
 		cg->ac_in = 0;
 		cg->prop_status = POWER_SUPPLY_STATUS_CHARGING;
 		if (cg->dc_in == 0)
-			rk818_cg_set_input_current(cg, cg->chrg_input /*INPUT_CUR450MA*/); /*fxn, modified*/
+			rk818_cg_set_input_current(cg, INPUT_CUR450MA);
 		power_supply_changed(cg->usb_psy);
 		power_supply_changed(cg->ac_psy);
 		break;
