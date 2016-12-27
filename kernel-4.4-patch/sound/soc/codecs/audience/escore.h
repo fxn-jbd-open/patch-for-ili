@@ -762,6 +762,7 @@ int escore_put_af_status(struct snd_kcontrol *kcontrol,
 int escore_get_af_status(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol);
 int escore_fw_recovery(struct escore_priv *escore, int is_forced);
+int escore_spi_cmd(struct escore_priv *escore, u32 cmd, u32 *resp);	//fxn, added
 int read_debug_data(void *buf);
 extern int escore_reconfig_intr(struct escore_priv *escore);
 extern const struct dev_pm_ops escore_pm_ops;

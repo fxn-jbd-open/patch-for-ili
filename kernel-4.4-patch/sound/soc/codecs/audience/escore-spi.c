@@ -338,8 +338,8 @@ spi_write_err:
 
 	return rc;
 }
-
-static int escore_spi_cmd(struct escore_priv *escore,
+// fxn, modified static int to int because will be called in es705_escore.c
+int escore_spi_cmd(struct escore_priv *escore,
 			  u32 cmd, u32 *resp)
 {
 	int err = 0;

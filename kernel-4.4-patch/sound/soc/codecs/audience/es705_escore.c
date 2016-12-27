@@ -701,6 +701,30 @@ static ssize_t es705_force_recovery(struct device *dev,
 }
 
 static DEVICE_ATTR(force_recovery, 0644, NULL, es705_force_recovery);
+/*fxn added {*/
+static ssize_t es705_getRMS(struct device *dev,
+				     struct device_attribute *attr,
+				     char *buf)
+{
+	u32 value_pri = 0;
+	u32 cmd_pri = 0x80130000;
+	u32 value_sec = 0;
+	u32 cmd_sec = 0x80130001;
+	struct escore_priv *escore = &escore_priv;
+
+	mutex_lock(&escore->access_lock);
+	/*read primary mic*/
+	escore_spi_cmd(escore, cmd_pri, &value_pri);
+	/*read second mic*/
+	escore_spi_cmd(escore, cmd_sec, &value_sec);
+	mutex_unlock(&escore->access_lock);
+	/* Null terminate the string*/
+	return snprintf(buf, PAGE_SIZE, "getRMS: pri:0x%x (%d), sec:0x%x (%d)\n",
+		 value_pri, value_pri&0xffff, value_sec, value_sec&0xffff);
+}
+
+static DEVICE_ATTR(getRMS, 0444, es705_getRMS, NULL);
+/*fxn, end}*/
 #endif
 
 static struct attribute *core_sysfs_attrs[] = {
@@ -719,6 +743,7 @@ static struct attribute *core_sysfs_attrs[] = {
 	&dev_attr_profile_enable.attr,
 #ifdef ILI_FXCN_WA1
 	&dev_attr_force_recovery.attr,
+        &dev_attr_getRMS.attr,	// fxn, added
 #endif
 	NULL
 };
