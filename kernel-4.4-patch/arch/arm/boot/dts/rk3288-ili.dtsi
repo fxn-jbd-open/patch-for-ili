@@ -377,16 +377,16 @@
 					//regulator-suspend-microvolt = <3300000>;
 				};
 			};
-			/*changed 1.1V to 1.3V to resolve the es814 boot problems in low temperature*/
+			/*changed 1.1V to 1.2V to resolve the es814 boot problems in very low temperature*/
 			rk818_vdd10_lcd: LDO_REG6 {
 				regulator-name = "vdd10_lcd";
 				regulator-always-on;
 				regulator-boot-on;
-				regulator-min-microvolt = <1300000>;
-				regulator-max-microvolt = <1300000>;
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <1200000>;
 				regulator-state-mem {
 					regulator-on-in-suspend;
-					regulator-suspend-microvolt = <1300000>;
+					regulator-suspend-microvolt = <1200000>;
 				};
 			};
 
