@@ -2260,11 +2260,11 @@ int fxn_i2s_switch_ctrl(int enable, int out_channel)
             gpio_set_value(iGpioSwitchEnable, 0);
         else
             gpio_set_value(iGpioSwitchEnable, 1);
-        printk("i2s_switch %s! (gpio=%d)\n", enable ? "enabled":"disabled", iGpioSwitchEnable);
+        //printk("i2s_switch %s! (gpio=%d)\n", enable ? "enabled":"disabled", iGpioSwitchEnable);
 
         if (gpio_is_valid(iGpioSwitchIn)) {
             gpio_set_value(iGpioSwitchIn, out_channel);
-            printk("i2s_switch In=%d (gpio=%d)\n", out_channel, iGpioSwitchIn);
+            //printk("i2s_switch In=%d (gpio=%d)\n", out_channel, iGpioSwitchIn);
             iRet = 0;
         }
     }
@@ -2648,10 +2648,12 @@ static int tfa98xx_mute(struct snd_soc_dai *dai, int mute, int stream)
 			tfa98xx->cstream = 1;
 
 		/* Start DSP */
+		/*fxn, modified 0 to msecs_to_jiffies(30)*/
+		/* because i2s ws signal shall be active before the tfa9890 fires i2c*/
 		if (tfa98xx->dsp_init != TFA98XX_DSP_INIT_PENDING)
 			queue_delayed_work(tfa98xx->tfa98xx_wq,
 							&tfa98xx->init_work,
-							0);
+							msecs_to_jiffies(30));
 	}
 
 	return 0;
@@ -2898,14 +2900,14 @@ static int tfa98xx_ext_reset(struct tfa98xx *tfa98xx)
 		gpio_set_value_cansleep(tfa98xx->reset_gpio, 0);
 /*HC*/
         iGpioSwitchEnable = tfa98xx->reset_gpio;
-        printk("i2s_switch enabled!, gpio(%d)\n", iGpioSwitchEnable);
+        //printk("i2s_switch enabled!, gpio(%d)\n", iGpioSwitchEnable);
 	}
 
 /*HC*/
 	if (tfa98xx && gpio_is_valid(tfa98xx->power_gpio)) {
 		gpio_set_value_cansleep(tfa98xx->power_gpio, 1);
         iGpioSwitchIn = tfa98xx->power_gpio;
-        printk("i2s_switch In=Hi!, gpio(%d)\n", iGpioSwitchIn);
+        //printk("i2s_switch In=Hi!, gpio(%d)\n", iGpioSwitchIn);
 	}
 	return 0;
 }
