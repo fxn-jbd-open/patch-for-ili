@@ -7,6 +7,10 @@
   `mkdir -p ~/proj/rk-linux`  
   `cd ~/proj/rk-linux`  
   `git clone https://github.com/rockchip-linux/kernel.git -b release-4.4`  
+  `git checkout 028bc40a6`  
+
+  git log  
+  commit 028bc40a6d227cb553236588c43f35ad7ae2af97  
   
 **Patch**  
   
