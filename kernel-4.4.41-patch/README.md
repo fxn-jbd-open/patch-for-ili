@@ -15,7 +15,7 @@
 **Patch**  
   
   `cd ~/proj/rk-linux/kernel`  
-  `cp -a /path/to/patch-for-ili/kernel-4.4-patch/* .`  
+  `cp -a /path/to/patch-for-ili/kernel-4.4.41-patch/* .`  
   
 **Build**  
   
